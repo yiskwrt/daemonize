@@ -3,8 +3,13 @@ TARGET=mywebserver
 CSRCS=mywebserver.c
 OBJS=$(CSRCS:.c=.o)
 
-ifeq ($(USE_CUSTOM_IMPL),y) 
-CFLAGS=-DUSE_CUSTOM_IMPL
+## custom / glibc / none
+ifeq ($(DAEMON_TYPE),custom)
+CFLAGS+=-DUSE_CUSTOM_IMPL
+else
+ifeq ($(DAEMON_TYPE),glibc)
+CFLAGS+=-DUSE_GLIBC_IMPL
+endif
 endif
 
 $(TARGET): $(OBJS)

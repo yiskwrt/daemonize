@@ -18,6 +18,8 @@
 #include <errno.h>
 #include <fcntl.h>
 
+#define PIDFILE "/var/run/mywebserver.pid"
+
 int run_server(const char *greeting)
 {
 	int rsock;
@@ -132,27 +134,34 @@ static void create_daemon()
 	}	
 }
 
+void make_pidfile()
+{
+	FILE *fp;
+	fp = fopen(PIDFILE, "w");
+	fprintf(fp, "%d", (int)getpid());
+	fclose(fp);
+}
+
 int main(int argc, char *argv[])
 {
 	int ret;
-	char greeting[128];
+	const char *greeting;
 	const char default_greeting[] = "hello from myserver";
 
 #ifdef USE_CUSTOM_IMPL
 	printf("custom daemonize routine\n");
 	create_daemon();
-#else	
+	make_pidfile();
+#endif
+
+#ifdef USE_GLIBC_IMPL
 	printf("glibc daemonize routine\n");
 	if (daemon(0,0)) {
 		exit(EXIT_FAILURE);
 	}
 #endif
 
-	if (argc > 1) {
-		strcpy(greeting, argv[1]);
-	} else {
-		strcpy(greeting, default_greeting);
-	}
+	greeting = (argc>1) ? argv[1] : default_greeting;
 
 	openlog("mywebserver", LOG_PID, LOG_USER);
 	ret = run_server(greeting);
