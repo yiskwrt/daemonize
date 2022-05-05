@@ -159,6 +159,7 @@ int main(int argc, char *argv[])
 	if (daemon(0,0)) {
 		exit(EXIT_FAILURE);
 	}
+	make_pidfile();
 #endif
 
 	greeting = (argc>1) ? argv[1] : default_greeting;

@@ -1,0 +1,17 @@
+[Unit]
+Description=my_webserver_sample
+After=network.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/mywebserver.pid
+WorkingDirectory=/
+ExecStart=/opt/mywebserver/mywebserver
+ExecStop=/bin/kill $MAINPID
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=mywebserver
+
+[Install]
+WantedBy=multi-user.target
